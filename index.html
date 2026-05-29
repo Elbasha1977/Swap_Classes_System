@@ -41,6 +41,8 @@
         .best-slot-box i { font-size: 20px; margin-left: 10px; }
         .programmer-btn { display: inline-block; background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); color: white; border: none; padding: 10px 30px; border-radius: 50px; font-weight: bold; margin: 20px auto; cursor: pointer; transition: all 0.3s ease; font-size: 16px; }
         .programmer-btn:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .floating-send-btn { position: fixed; bottom: 20px; left: 20px; background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; font-size: 16px; display: none; }
+        .floating-send-btn i { margin-left: 8px; }
         .password-overlay, .terms-overlay, .date-option-overlay, .send-options-overlay {
             position: fixed;
             top: 0;
@@ -105,10 +107,8 @@
         .send-options .email-text-btn:hover { background: #d3382a; }
         .send-options .copy-text-btn { background: #17a2b8; }
         .send-options .copy-text-btn:hover { background: #138496; }
-        .send-options .download-btn { background: #6c757d; }
-        .send-options .download-btn:hover { background: #5a6268; }
-        .send-options .skip-btn { background: #dc3545; }
-        .send-options .skip-btn:hover { background: #c82333; }
+        .send-options .skip-btn { background: #6c757d; }
+        .send-options .skip-btn:hover { background: #5a6268; }
         .contact-info { background: #e7f5ff; padding: 12px; border-radius: 16px; margin: 15px 0; text-align: right; }
         .contact-info i { width: 25px; color: #1e3c72; }
         @media print { .no-print { display: none; } }
@@ -302,6 +302,11 @@
     </div>
 </div>
 
+<!-- زر عائم للإرسال بعد التصدير -->
+<button id="floatingSendBtn" class="floating-send-btn">
+    <i class="fas fa-paper-plane"></i> إرسال الطلب
+</button>
+
 <div id="passwordOverlay" class="password-overlay">
     <div class="password-modal">
         <i class="fas fa-lock" style="font-size: 50px; color: #1e3c72;"></i>
@@ -373,9 +378,6 @@
             <button class="copy-text-btn" onclick="copyTextToClipboard()">
                 <i class="fas fa-copy"></i> نسخ النص
             </button>
-            <button class="download-btn" onclick="downloadFileFirst()">
-                <i class="fas fa-download"></i> تحميل PDF
-            </button>
             <button class="skip-btn" onclick="closeSendOptions()">
                 <i class="fas fa-times"></i> إغلاق
             </button>
@@ -443,7 +445,7 @@ const periodsList = ["الحصة 1", "الحصة 2", "الحصة 3", "الحصة
 const dayNumberMap = { "الأحد": 0, "الاثنين": 1, "الثلاثاء": 2, "الأربعاء": 3, "الخميس": 4 };
 
 // ============================================================
-// جدول الحصص الكامل لجميع المعلمين الـ 45 - كامل
+// جدول الحصص الكامل لجميع المعلمين الـ 45
 // ============================================================
 const schedule = {
     "ضيف الله ناجي": {
@@ -1330,22 +1332,20 @@ function copyTextToClipboard() {
     closeSendOptions();
 }
 
-function downloadFileFirst() {
-    if (!lastPdfBlob || !lastTeacherBName) { alert('لا يوجد ملف PDF للإرسال'); return; }
-    const url = URL.createObjectURL(lastPdfBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `نموذج_تبديل_حصص_${lastTeacherBName}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    alert('تم تحميل الملف بنجاح، يمكنك الآن إرساله عبر الواتساب أو الإيميل');
-    closeSendOptions();
-}
-
 function showSendOptions() { document.getElementById('sendOptionsOverlay').classList.add('active'); }
 function closeSendOptions() { document.getElementById('sendOptionsOverlay').classList.remove('active'); }
+
+// زر الإرسال العائم
+function showFloatingSendButton() {
+    const btn = document.getElementById('floatingSendBtn');
+    if (btn) {
+        btn.style.display = 'block';
+        btn.onclick = () => {
+            showSendOptions();
+            btn.style.display = 'none';
+        };
+    }
+}
 
 // ============================================================
 // تهيئة المتغيرات والعناصر
@@ -1516,7 +1516,7 @@ document.getElementById('generatePdfBtn').addEventListener('click', async () => 
         <div style="border:1px solid #ddd; border-radius:15px; padding:15px;">
             <h5>📋 تفاصيل عملية التبديل</h5>
             <table style="width:100%">
-                <tr style="background:#f0f4f8"><td colspan="2"><strong>نوع التبديل:</strong> ${data.swapType}            </td></tr>
+                <tr style="background:#f0f4f8"><td colspan="2"><strong>نوع التبديل:</strong> ${data.swapType}             </td></tr>
                 <tr><td colspan="2"><hr></td></tr>
                 <tr style="background:#e7f5ff"><td colspan="2"><strong>📌 الحصة المتبادلة</strong></td></tr>
                 <tr><td style="width:40%"><strong>المعلم الأول:</strong></td><td>${data.teacherA} (${data.teacherASub})</td></tr>
@@ -1562,7 +1562,8 @@ document.getElementById('generatePdfBtn').addEventListener('click', async () => 
             contactInfoDiv.innerHTML = `<i class="fas fa-user"></i> <strong>المعلم:</strong> ${contact.fullName}<br><i class="fab fa-whatsapp"></i> <strong>واتساب:</strong> ${contact.phone || "غير متوفر"}<br><i class="fas fa-envelope"></i> <strong>البريد:</strong> ${contact.email || "غير متوفر"}`;
         }
         pdf.save(`نموذج_تبديل_حصص_${data.teacherA}_${data.teacherB}.pdf`);
-        setTimeout(() => { showSendOptions(); }, 500);
+        alert('✅ تم حفظ ملف PDF بنجاح!');
+        showFloatingSendButton();
     } catch(e) { alert('خطأ: ' + e.message); }
     finally { document.body.removeChild(reportDiv); }
 });
