@@ -1,8 +1,8 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>نظام تبديل الحصص - معلمي مدرسة أحمد بن راشد</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -41,14 +41,52 @@
         .best-slot-box i { font-size: 20px; margin-left: 10px; }
         .programmer-btn { display: inline-block; background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); color: white; border: none; padding: 10px 30px; border-radius: 50px; font-weight: bold; margin: 20px auto; cursor: pointer; transition: all 0.3s ease; font-size: 16px; }
         .programmer-btn:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .password-overlay, .terms-overlay, .date-option-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; visibility: hidden; opacity: 0; transition: all 0.3s ease; }
-        .password-overlay.active, .terms-overlay.active, .date-option-overlay.active { visibility: visible; opacity: 1; }
-        .password-modal, .terms-modal, .date-option-modal { background: white; border-radius: 28px; padding: 30px; width: 400px; max-width: 90%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .password-overlay, .terms-overlay, .date-option-overlay, .send-options-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .password-overlay.active, .terms-overlay.active, .date-option-overlay.active, .send-options-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .password-modal, .terms-modal, .date-option-modal, .send-options-modal {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            width: 420px;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 100000;
+        }
         .terms-modal { width: 500px; }
         .date-option-modal { width: 400px; }
+        .send-options-modal { width: 400px; }
         .password-modal input { width: 100%; padding: 12px; margin: 20px 0; border: 2px solid #ddd; border-radius: 50px; font-size: 16px; text-align: center; }
-        .password-modal button, .terms-modal button, .date-option-modal button { background: linear-gradient(135deg, #1e3c72 0%, #2b4c7c 100%); border: none; padding: 10px 30px; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; }
-        .password-modal .close-btn, .date-option-modal .close-btn { background: #dc3545; margin-left: 10px; }
+        .password-modal button, .terms-modal button, .date-option-modal button, .send-options-modal button {
+            background: linear-gradient(135deg, #1e3c72 0%, #2b4c7c 100%);
+            border: none;
+            padding: 10px 30px;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .password-modal .close-btn, .date-option-modal .close-btn, .send-options-modal .close-btn { background: #dc3545; margin-left: 10px; }
         .terms-list { text-align: right; list-style: none; padding: 0; }
         .terms-list li { background: #f8f9fa; margin: 10px 0; padding: 12px 20px; border-radius: 15px; border-right: 4px solid #1e3c72; font-size: 14px; }
         .terms-list li i { color: #1e3c72; margin-left: 10px; }
@@ -59,7 +97,17 @@
         .date-option .before-date:hover { background: #138496; }
         .date-option .after-date { background: #28a745; color: white; }
         .date-option .after-date:hover { background: #218838; }
-        .date-option-display { font-size: 14px; color: #555; margin-top: 10px; }
+        .send-options { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+        .send-options button { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; }
+        .send-options .whatsapp-text-btn { background: #075E54; }
+        .send-options .whatsapp-text-btn:hover { background: #054a44; }
+        .send-options .email-text-btn { background: #ea4335; }
+        .send-options .email-text-btn:hover { background: #d3382a; }
+        .send-options .download-btn { background: #17a2b8; }
+        .send-options .download-btn:hover { background: #138496; }
+        .send-options .skip-btn { background: #6c757d; }
+        .contact-info { background: #e7f5ff; padding: 12px; border-radius: 16px; margin: 15px 0; text-align: right; }
+        .contact-info i { width: 25px; color: #1e3c72; }
         @media print { .no-print { display: none; } }
     </style>
 </head>
@@ -90,7 +138,7 @@
                     2. اختر المعلم المبدل معه (يجب أن يكون فارغاً في نفس التوقيت)<br>
                     3. للتبديل الخارجي: يعرض فقط المعلمين الذين يدرسون نفس الصف<br>
                     4. سيتم اقتراح أفضل حصة تعويض مناسبة للطرفين تلقائياً<br>
-                    5. يمكنك اختيار الحصة المقترحة وتحديد التاريخ المناسب (قبل/بعد تاريخ الحصة الأصلية)
+                    5. يمكنك اختيار الحصة المقترحة وتحديد التاريخ المناسب
                 </div>
                 
                 <form id="swapForm">
@@ -303,6 +351,32 @@
     </div>
 </div>
 
+<div id="sendOptionsOverlay" class="send-options-overlay">
+    <div class="send-options-modal">
+        <i class="fas fa-paper-plane" style="font-size: 50px; color: #1e3c72;"></i>
+        <h3 style="margin-top: 15px;">إرسال طلب الموافقة</h3>
+        <div id="teacherBContactInfo" class="contact-info">
+            <i class="fas fa-user"></i> <strong>المعلم:</strong> ---<br>
+            <i class="fab fa-whatsapp"></i> <strong>واتساب:</strong> ---<br>
+            <i class="fas fa-envelope"></i> <strong>البريد:</strong> ---
+        </div>
+        <div class="send-options">
+            <button class="whatsapp-text-btn" onclick="sendTextViaWhatsApp()">
+                <i class="fab fa-whatsapp"></i> إرسال نص عبر واتساب
+            </button>
+            <button class="email-text-btn" onclick="sendTextViaEmail()">
+                <i class="fas fa-envelope"></i> إرسال نص عبر الإيميل
+            </button>
+            <button class="download-btn" onclick="downloadFileFirst()">
+                <i class="fas fa-download"></i> تحميل PDF
+            </button>
+            <button class="skip-btn" onclick="closeSendOptions()">
+                <i class="fas fa-times"></i> تخطي
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 // ============================================================
 // قائمة المعلمين (45 معلماً) مرتبة حسب المواد الدراسية - كاملة
@@ -360,17 +434,12 @@ const teachersList = [
 // ============================================================
 const daysList = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"];
 const periodsList = ["الحصة 1", "الحصة 2", "الحصة 3", "الحصة 4", "الحصة 5", "الحصة 6", "الحصة 7"];
-
-// أيام الأسبوع بالترتيب الرقمي (للحسابات)
-const dayNumberMap = {
-    "الأحد": 0, "الاثنين": 1, "الثلاثاء": 2, "الأربعاء": 3, "الخميس": 4
-};
+const dayNumberMap = { "الأحد": 0, "الاثنين": 1, "الثلاثاء": 2, "الأربعاء": 3, "الخميس": 4 };
 
 // ============================================================
 // جدول الحصص الكامل لجميع المعلمين الـ 45 - كامل
 // ============================================================
 const schedule = {
-    // ==================== التربية الإسلامية (5 معلمين) ====================
     "ضيف الله ناجي": {
         "الأحد": ["فارغ", "شرعية سادس 1", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"],
         "الاثنين": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "شرعية سادس 1", "فارغ"],
@@ -406,7 +475,6 @@ const schedule = {
         "الأربعاء": ["شرعية سادس 2", "فارغ", "شرعية سادس 4", "فارغ", "فارغ", "فارغ", "فارغ"],
         "الخميس": ["شرعية سادس 2", "فارغ", "شرعية سادس 4", "فارغ", "شرعية سادس 3", "فارغ", "فارغ"]
     },
-    // ==================== الرياضيات (8 معلمين) ====================
     "عطا الله عبد الوهاب": {
         "الأحد": ["فارغ", "فارغ", "فارغ", "فارغ", "رياضيات سادس 7", "فارغ", "فارغ"],
         "الاثنين": ["فارغ", "فارغ", "رياضيات سادس 7", "فارغ", "فارغ", "فارغ", "رياضيات سادس 7"],
@@ -463,7 +531,6 @@ const schedule = {
         "الأربعاء": ["فارغ", "رياضيات سادس 3", "فارغ", "فارغ", "رياضيات سادس 4", "فارغ", "رياضيات سادس 3"],
         "الخميس": ["رياضيات سادس 3", "فارغ", "فارغ", "رياضيات سادس 4", "فارغ", "فارغ", "فارغ"]
     },
-    // ==================== اللغة العربية (7 معلمين) ====================
     "باسل الدريعي": {
         "الأحد": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "عربي سادس 7", "فارغ"],
         "الاثنين": ["عربي سادس 7", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"],
@@ -513,7 +580,6 @@ const schedule = {
         "الأربعاء": ["عربي خامس 4", "فارغ", "عربي خامس 3", "فارغ", "فارغ", "فارغ", "عربي خامس 4"],
         "الخميس": ["عربي خامس 4", "فارغ", "فارغ", "فارغ", "عربي خامس 3", "فارغ", "فارغ"]
     },
-    // ==================== اللغة الإنجليزية (6 معلمين) ====================
     "اسماعيل ابراهيم": {
         "الأحد": ["انجليزي خامس 4", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"],
         "الاثنين": ["فارغ", "انجليزي خامس 4", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"],
@@ -556,7 +622,6 @@ const schedule = {
         "الأربعاء": ["انجليزي خامس 2", "فارغ", "فارغ", "انجليزي خامس 1", "فارغ", "فارغ", "انجليزي خامس 3"],
         "الخميس": ["فارغ", "انجليزي خامس 3", "فارغ", "انجليزي خامس 2", "انجليزي خامس 1", "فارغ", "فارغ"]
     },
-    // ==================== العلوم (4 معلمين) ====================
     "اشرف حافظ": {
         "الأحد": ["فارغ", "فارغ", "فارغ", "فارغ", "علوم سادس 1", "فارغ", "فارغ"],
         "الاثنين": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"],
@@ -585,7 +650,6 @@ const schedule = {
         "الأربعاء": ["فارغ", "فارغ", "علوم خامس 4", "فارغ", "علوم خامس 3", "علوم خامس 6", "فارغ"],
         "الخميس": ["فارغ", "فارغ", "علوم خامس 4", "علوم خامس 5", "فارغ", "علوم خامس 7", "فارغ"]
     },
-    // ==================== الاجتماعيات (5 معلمين) ====================
     "سعيد سعيد": {
         "الأحد": ["فارغ", "فارغ", "فارغ", "اجتماعيات سادس 7", "فارغ", "فارغ", "فارغ"],
         "الاثنين": ["فارغ", "فارغ", "فارغ", "فارغ", "اجتماعيات سادس 7", "فارغ", "فارغ"],
@@ -621,7 +685,6 @@ const schedule = {
         "الأربعاء": ["فارغ", "فارغ", "فارغ", "اجتماعيات سادس 1", "فارغ", "اجتماعيات سادس 3", "فارغ"],
         "الخميس": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"]
     },
-    // ==================== الفنون البصرية (3 معلمين) ====================
     "سيد ربيع": {
         "الأحد": ["فارغ", "فارغ", "فارغ", "فارغ", "فنية معمل فنون 1 خامس 1", "فارغ", "فارغ"],
         "الاثنين": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"],
@@ -643,7 +706,6 @@ const schedule = {
         "الأربعاء": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فنية معمل فنون 2 سادس 2", "فارغ"],
         "الخميس": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فنية معمل فنون 2 سادس 5", "فارغ"]
     },
-    // ==================== الحاسوب (3 معلمين) ====================
     "محمد سليم": {
         "الأحد": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"],
         "الاثنين": ["فارغ", "فارغ", "حاسوب معمل الحاسوب 2 سادس 1", "فارغ", "فارغ", "فارغ", "فارغ"],
@@ -665,7 +727,6 @@ const schedule = {
         "الأربعاء": ["فارغ", "فارغ", "حاسوب معمل الحاسوب 1 خامس 5", "فارغ", "فارغ", "فارغ", "فارغ"],
         "الخميس": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "حاسوب معمل الحاسوب 1 خامس 4", "فارغ"]
     },
-    // ==================== التربية الرياضية (3 معلمين) ====================
     "محمد الدوسري": {
         "الأحد": ["فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"],
         "الاثنين": ["فارغ", "رياضة سادس 7", "فارغ", "فارغ", "فارغ", "فارغ", "فارغ"],
@@ -687,7 +748,6 @@ const schedule = {
         "الأربعاء": ["رياضة سادس 6", "فارغ", "رياضة سادس 5", "رياضة سادس 4", "فارغ", "فارغ", "فارغ"],
         "الخميس": ["فارغ", "رياضة سادس 2", "فارغ", "فارغ", "رياضة سادس 1", "فارغ", "فارغ"]
     },
-    // ==================== التربية الحياتية (1 معلم) ====================
     "يوسف الأسمر + أحمد عصام": {
         "الأحد": ["مهارات حياتية سادس 2", "فارغ", "فارغ", "فارغ", "مهارات حياتية سادس 6", "فارغ", "فارغ"],
         "الاثنين": ["فارغ", "مهارات حياتية خامس 3", "فارغ", "فارغ", "مهارات حياتية خامس 1", "مهارات حياتية سادس 5", "مهارات حياتية خامس 4"],
@@ -696,6 +756,71 @@ const schedule = {
         "الخميس": ["فارغ", "فارغ", "فارغ", "فارغ", "مهارات حياتية خامس 7", "مهارات حياتية سادس 7", "فارغ"]
     }
 };
+
+// ============================================================
+// بيانات الاتصال للمعلمين (من ملف Excel)
+// ============================================================
+const teachersContact = {
+    "ضيف الله ناجي": { phone: "97477885826", email: "d.alalsasmeh0107@education.qa", fullName: "ضيف الله ناجي عبد الله اللصاصمه" },
+    "محمد ادم": { phone: "97430959099", email: "m.adam0605@education.qa", fullName: "محمد السيد محمد آدم" },
+    "طلعت الزواوي": { phone: "97433915550", email: "t.hemida10101@education.qa", fullName: "طلعت عبد الناصرعيد حميدة" },
+    "سفيان الدولات": { phone: "97470766640", email: "s.aldollat2612@education.qa", fullName: "سفيان محمد عبد الله الدولات" },
+    "محمد عبابنه": { phone: "97430444105", email: "m.ababneh2912@education.qa", fullName: "محمد أحمد إبراهيم عبابنه" },
+    "عطا الله عبد الوهاب": { phone: "97430066844", email: "a.althamneh2502@education.qa", fullName: "عطا الله عبد الوهاب فضيل العثامنه" },
+    "أحمد سعيد": { phone: "97470771701", email: "a.kanaan1312@education.qa", fullName: "احمد سعيد محمود كنعان" },
+    "علي الجمل": { phone: "97470181222", email: "a.aljamal2612@education.qa", fullName: "علي فالح علي الجمل" },
+    "محمد جابر": { phone: "97477090667", email: "m.rizq1912@education.qa", fullName: "محمد جابر محمد رزق" },
+    "يزن رياض": { phone: "97470792777", email: "y.tanash1311@education.qa", fullName: "يزن رياض احمد طناش" },
+    "عبدالرزاق العياري": { phone: "97450827161", email: "a.ayari0305@education.qa", fullName: "عبد الرزاق الصيفي العياري" },
+    "الازهر بن علي": { phone: "97477252776", email: "l.missaoui1201@education.qa", fullName: "الازهر بن علي الميساوي" },
+    "عمر قطب": { phone: "97431081022", email: "o.hassanein0201@education.qa", fullName: "عمر قطب سيد حسن حسانين" },
+    "باسل الدريعي": { phone: "97455229732", email: "b.aldrei0105@education.qa", fullName: "باسل محمد منذر الدريعى" },
+    "حسن الشربيني": { phone: "97433625511", email: "h.elsherbini2709@education.qa", fullName: "حسن محمود حسن محمد الشربيني" },
+    "عادل أبوزيد": { phone: "97474015048", email: "a.selim1309@education.qa", fullName: "عادل حسين ابوزيد سليم" },
+    "عصام الحويوي": { phone: "97431173000", email: "e.elhewiwi0105@education.qa", fullName: "عصام علي فتحي الحويوي" },
+    "يونس شلوت": { phone: "97455700721", email: "y.alshalout2806@education.qa", fullName: "يونس شلوت الشلوت" },
+    "بلال الزقيلي": { phone: "97433975255", email: "b.alzqaili1310@education.qa", fullName: "بلال محمود عقيل الزقيلي" },
+    "محمد المهداوي": { phone: "97455890512", email: "m.mehdawi1907@education.qa", fullName: "محمد عبدالرحمن صالح مهداوي" },
+    "اسماعيل ابراهيم": { phone: "97455742864", email: "i.haroun0802@education.qa", fullName: "اسماعيل ابراهيم هارون" },
+    "بلال قاسم": { phone: "97431313447", email: "b.saifan0611@education.qa", fullName: "بلال قاسم أحمد سعيفان" },
+    "محمد عبد الحميد": { phone: "97430617764", email: "m.ahmed010811@education.qa", fullName: "محمد عبد الحميد محمد احمد" },
+    "ابراهيم عزام": { phone: "97474034441", email: "i.azzam1003@education.qa", fullName: "إبراهيم أحمد محمود عزام" },
+    "عبد الباسط عطيه": { phone: "97433217162", email: "a.atia1201@education.qa", fullName: "عبد الباسط عبد الفتاح عبد النبي عطيه" },
+    "عبدالمنعم القمودي": { phone: "97450472979", email: "a.gammoudi0707@education.qa", fullName: "عبدالمنعم بن رحال قمودي" },
+    "اشرف حافظ": { phone: "97455946775", email: "a.abouzaid0602@education.qa", fullName: "اشرف حافظ حامد ابوزيد" },
+    "أيمن جمال": { phone: "97477088798", email: "a.alrawashdeh01051@education.qa", fullName: "ايمن جمال الرواشدة" },
+    "عبد الله حامد": { phone: "97433652772", email: "a.aly0501@education.qa", fullName: "عبد الله حامد عطيه على" },
+    "عبدالله فردويني": { phone: "97433107710", email: "a.fardavini15081@education.qa", fullName: "عبد الله خالد محمد فردويني" },
+    "سعيد سعيد": { phone: "97430054477", email: "s.elfar2611@education.qa", fullName: "سعيد سعيد عبد الباري محمد الفار" },
+    "عبد الله العليوي": { phone: "97450289186", email: "a.aleve2010@education.qa", fullName: "عبد الله العليوي" },
+    "معاوية عوده البوات": { phone: "97430056200", email: "m.abedalbawwat2203@education.qa", fullName: "معاوية عوده عبد البوات" },
+    "محمد النصر": { phone: "97433343335", email: "m.nasr-al01014@education.qa", fullName: "محمد احمد مبارك عيسى النصر" },
+    "محمد بوجلوف": { phone: "97455004236", email: "m.jaloof-bu0802@education.qa", fullName: "محمد سعد صالح حسن بوجلوف" },
+    "سيد ربيع": { phone: "97431007224", email: "s.hussein15012@education.qa", fullName: "سيد ربيع سيد حسين" },
+    "مجدي الشال": { phone: "97455715227", email: "m.elshal0109@education.qa", fullName: "مجدى السيد احمد مصطفى الشال" },
+    "محمد ذينات": { phone: "97430581000", email: "m.thynat1501@education.qa", fullName: "محمد كامل ابراهيم ذينات" },
+    "محمد سليم": { phone: "97450567579", email: "m.dammak2705@education.qa", fullName: "محمد سليم سالم دمق" },
+    "علي حسن": { phone: "97474707616", email: "a.elsisi0103@education.qa", fullName: "على حسن على السيسى" },
+    "جميل صباغ": { phone: "97466171164", email: "j.sabbagh1702@education.qa", fullName: "جميل عمر جميل صباغ" },
+    "محمد الدوسري": { phone: "97430700530", email: "m.dosari-al1604@education.qa", fullName: "محمد عبد الله برمان الكبرى الدوسري" },
+    "محمد التوبي": { phone: "97477088086", email: "m.altubi1105@education.qa", fullName: "محمد خميس جمعه ثبات التوبي" },
+    "حسين الخواجة": { phone: "97477605599", email: "h.khawaja2007@education.qa", fullName: "حسين على جواد محمد الخواجه" },
+    "يوسف الأسمر + أحمد عصام": { phone: "97450835035", email: "y.alasmar1607@education.qa", fullName: "يوسف خالد يوسف الأسمر" }
+};
+
+// دالة للحصول على بيانات اتصال المعلم
+function getTeacherContact(teacherName) {
+    for (const [key, value] of Object.entries(teachersContact)) {
+        if (teacherName.includes(key) || key.includes(teacherName) || teacherName === key) {
+            return value;
+        }
+    }
+    return { phone: "", email: "", fullName: teacherName };
+}
+
+let lastPdfBlob = null;
+let lastTeacherBName = null;
+let lastSwapData = null;
 
 // ============================================================
 // دوال المساعدة الأساسية
@@ -780,27 +905,20 @@ function calculateTeacherComfortScore(teacherName, day, periodName) {
     let score = 0;
     const periodIndex = getPeriodIndex(periodName);
     const periods = ["الحصة 1", "الحصة 2", "الحصة 3", "الحصة 4", "الحصة 5", "الحصة 6", "الحصة 7"];
-    
     if (periodIndex > 0) {
         const prevPeriod = periods[periodIndex - 1];
         const prevClass = getTeacherClass(teacherName, day, prevPeriod);
-        if (prevClass !== "فارغ" && prevClass !== "غير محدد") {
-            score += 10;
-        }
+        if (prevClass !== "فارغ" && prevClass !== "غير محدد") score += 10;
     }
     if (periodIndex < 6) {
         const nextPeriod = periods[periodIndex + 1];
         const nextClass = getTeacherClass(teacherName, day, nextPeriod);
-        if (nextClass !== "فارغ" && nextClass !== "غير محدد") {
-            score += 10;
-        }
+        if (nextClass !== "فارغ" && nextClass !== "غير محدد") score += 10;
     }
     let dailyClassesCount = 0;
     for (let p of periods) {
         const className = getTeacherClass(teacherName, day, p);
-        if (className !== "فارغ" && className !== "غير محدد") {
-            dailyClassesCount++;
-        }
+        if (className !== "فارغ" && className !== "غير محدد") dailyClassesCount++;
     }
     score += dailyClassesCount * 2;
     return score;
@@ -816,61 +934,41 @@ function doesTeacherTeachClass(teacherName, targetClassName) {
         for (const period of periodsList) {
             const fullClass = getTeacherClass(teacherName, day, period);
             const classNameOnly = extractClassNameOnly(fullClass);
-            if (classNameOnly === targetClassName) {
-                return true;
-            }
+            if (classNameOnly === targetClassName) return true;
         }
     }
     return false;
 }
 
-// دالة حساب التاريخين المناسبين (نفس اليوم من الأسبوع)
-function getDatesForProposedDay(proposedDay, originalDate, originalDay) {
+function getDatesForProposedDay(proposedDay, originalDate) {
     const targetDayIndex = dayNumberMap[proposedDay];
     const originalDateObj = new Date(originalDate);
-    const originalDayIndex = originalDateObj.getDay(); // 0-6 (الأحد=0)
-    
+    const originalDayIndex = originalDateObj.getDay();
     let diff = targetDayIndex - originalDayIndex;
-    
-    // التاريخ السابق (قبل تاريخ الحصة الأصلية)
     const beforeDate = new Date(originalDateObj);
     beforeDate.setDate(originalDateObj.getDate() + (diff > 0 ? diff - 7 : diff));
-    
-    // التاريخ التالي (بعد تاريخ الحصة الأصلية)
     const afterDate = new Date(originalDateObj);
     afterDate.setDate(originalDateObj.getDate() + (diff > 0 ? diff : diff + 7));
-    
-    return {
-        before: beforeDate.toISOString().split('T')[0],
-        after: afterDate.toISOString().split('T')[0]
-    };
+    return { before: beforeDate.toISOString().split('T')[0], after: afterDate.toISOString().split('T')[0] };
 }
 
 function findBestSwapSlot() {
     const teacherAName = teacherASelect.value;
     const teacherBName = teacherBSelect.value;
     const swapType = document.querySelector('input[name="swapType"]:checked').value;
-    
     if (!teacherAName || !teacherBName) return null;
-    
     let bestSlot = null;
     let bestScore = Infinity;
-    
     for (const day of daysList) {
         for (const period of periodsList) {
             const isTeacherAFree = isTeacherFree(teacherAName, day, period);
             const isTeacherBBusy = isTeacherBusy(teacherBName, day, period);
-            
             if (isTeacherAFree && isTeacherBBusy) {
                 const teacherBClass = getTeacherClass(teacherBName, day, period);
-                
                 if (swapType === 'external') {
                     const teacherAClassInOriginalSlot = getTeacherClass(teacherAName, daySelectA.value, periodA.value);
-                    if (!doClassesMatch(teacherAClassInOriginalSlot, teacherBClass)) {
-                        continue;
-                    }
+                    if (!doClassesMatch(teacherAClassInOriginalSlot, teacherBClass)) continue;
                 }
-                
                 const totalScore = calculateBothComfortScore(teacherAName, teacherBName, day, period);
                 if (totalScore < bestScore) {
                     bestScore = totalScore;
@@ -879,7 +977,6 @@ function findBestSwapSlot() {
             }
         }
     }
-    
     return bestSlot;
 }
 
@@ -889,14 +986,12 @@ function updateBestSlotMessage() {
     const bestSlot = findBestSwapSlot();
     const messageDiv = document.getElementById('bestSlotMessage');
     const bestSlotText = document.getElementById('bestSlotText');
-    
     if (bestSlot && teacherAName && teacherBName) {
         let comfortText = '';
         if (bestSlot.score === 0) comfortText = '✨ ممتاز - لا توجد حصص مجاورة';
         else if (bestSlot.score <= 20) comfortText = '👍 جيد - ضغط بسيط';
         else if (bestSlot.score <= 40) comfortText = '⚠️ مقبول - ضغط متوسط';
         else comfortText = '❌ مرتفع - ضغط عالي';
-        
         bestSlotText.innerHTML = `${bestSlot.day} - ${bestSlot.period} (${bestSlot.className}) - مستوى الراحة: ${comfortText}`;
         messageDiv.style.display = 'block';
     } else {
@@ -908,43 +1003,27 @@ let pendingBestSlot = null;
 
 function showDateOptionOverlay() {
     const bestSlot = findBestSwapSlot();
-    if (!bestSlot) {
-        alert('لا توجد حصة مقترحة للتطبيق');
-        return;
-    }
-    
+    if (!bestSlot) { alert('لا توجد حصة مقترحة للتطبيق'); return; }
     pendingBestSlot = bestSlot;
-    
     document.getElementById('selectedDayText').innerText = bestSlot.day;
     document.getElementById('selectedPeriodText').innerText = bestSlot.period;
-    
-    // حساب التاريخين المناسبين بناءً على اليوم المقترح وتاريخ الحصة الأصلية
     const originalDate = dateInputA.value;
-    const originalDay = daySelectA.value;
-    const dates = getDatesForProposedDay(bestSlot.day, originalDate, originalDay);
-    
+    const dates = getDatesForProposedDay(bestSlot.day, originalDate);
     document.getElementById('beforeDateText').innerHTML = dates.before;
     document.getElementById('afterDateText').innerHTML = dates.after;
-    
     document.getElementById('dateOptionOverlay').classList.add('active');
 }
 
-function closeDateOptionOverlay() {
-    document.getElementById('dateOptionOverlay').classList.remove('active');
-    pendingBestSlot = null;
-}
+function closeDateOptionOverlay() { document.getElementById('dateOptionOverlay').classList.remove('active'); pendingBestSlot = null; }
 
 function applyBestSlotWithDate(date) {
     if (!pendingBestSlot) return;
-    
     daySelectSwap.value = pendingBestSlot.day;
     periodSwap.value = pendingBestSlot.period;
     dateInputSwap.value = date;
-    
     updateTeacherSwapStatus();
     updateTeacherBSwapClass();
     checkTeacherBusyInSwap();
-    
     closeDateOptionOverlay();
 }
 
@@ -952,17 +1031,14 @@ function checkTeacherBusyInSwap() {
     const teacherBName = teacherBSelect.value;
     const day = daySelectSwap.value;
     const period = periodSwap.value;
-    
     if (!teacherBName || !day || !period) {
         const warningDiv = document.getElementById('teacherBNotFreeWarning');
         if (warningDiv) warningDiv.style.display = 'none';
         return;
     }
-    
     const isBusy = isTeacherBusy(teacherBName, day, period);
     const warningDiv = document.getElementById('teacherBNotFreeWarning');
     const warningText = document.getElementById('teacherBNotFreeWarningText');
-    
     if (!isBusy) {
         warningDiv.style.display = 'block';
         warningText.innerHTML = `المعلم الثاني (${teacherBName}) <strong>فارغ</strong> في هذه الحصة (${period} يوم ${day}). هذا يعني أنه لن يتمكن من إعطائك حصة!`;
@@ -978,7 +1054,6 @@ function updateAvailableTeachers() {
     const day = daySelectA.value;
     const period = periodA.value;
     const swapType = document.querySelector('input[name="swapType"]:checked').value;
-    
     if (!teacherAName || !day || !period) {
         teacherBSelect.innerHTML = '<option value="">-- اختر المعلم واليوم والحصة أولاً --</option>';
         document.getElementById('availabilityNote').innerHTML = '';
@@ -987,10 +1062,8 @@ function updateAvailableTeachers() {
         updateBestSlotMessage();
         return;
     }
-    
     const teacherAObj = teachersList.find(t => t.name === teacherAName);
     if (!teacherAObj) return;
-    
     const teacherAClass = getTeacherClass(teacherAName, day, period);
     if (teacherAClass === "فارغ" || teacherAClass === "غير محدد") {
         teacherBSelect.innerHTML = '<option value="">-- المعلم ليس لديه حصة في هذا التوقيت --</option>';
@@ -1001,17 +1074,13 @@ function updateAvailableTeachers() {
         updateBestSlotMessage();
         return;
     }
-    
     let availableTeachers = [];
-    
     if (swapType === 'internal') {
         for (let teacher of teachersList) {
             if (teacher.name === teacherAName) continue;
             const isFree = isTeacherFree(teacher.name, day, period);
             if (!isFree) continue;
-            if (teacher.subject === teacherAObj.subject) {
-                availableTeachers.push(teacher);
-            }
+            if (teacher.subject === teacherAObj.subject) availableTeachers.push(teacher);
         }
     } else {
         const targetClassName = extractClassNameOnly(teacherAClass);
@@ -1035,7 +1104,6 @@ function updateAvailableTeachers() {
         }
         availableTeachers.sort((a, b) => a.comfortScore - b.comfortScore);
     }
-    
     currentAvailableTeachers = availableTeachers;
     teacherBSelect.innerHTML = '<option value="">-- اختر المعلم المتاح --</option>';
     if (availableTeachers.length === 0) {
@@ -1152,6 +1220,111 @@ function updateTeacherBSwapClass() {
 }
 
 // ============================================================
+// دوال إنشاء النص المنسق والإرسال
+// ============================================================
+function getFormattedTextMessage() {
+    if (!lastSwapData) return "";
+    const data = lastSwapData;
+    
+    function getSubjectOnly(className, defaultSubject) {
+        if (className.includes("انجليزي")) return "اللغة الإنجليزية";
+        if (className.includes("عربي")) return "اللغة العربية";
+        if (className.includes("رياضيات")) return "الرياضيات";
+        if (className.includes("علوم")) return "العلوم";
+        if (className.includes("اجتماعيات")) return "الاجتماعيات";
+        if (className.includes("شرعية")) return "التربية الإسلامية";
+        if (className.includes("تربية إسلامية")) return "التربية الإسلامية";
+        if (className.includes("فنية")) return "الفنون البصرية";
+        if (className.includes("حاسوب")) return "الحاسوب";
+        if (className.includes("رياضة")) return "التربية الرياضية";
+        if (className.includes("مهارات حياتية")) return "التربية الحياتية";
+        return defaultSubject;
+    }
+    
+    const teacherAClassFull = data.teacherAClass;
+    const teacherBClassFull = data.teacherBClass;
+    const teacherAMaterial = getSubjectOnly(teacherAClassFull, data.teacherASub);
+    const teacherBMaterial = getSubjectOnly(teacherBClassFull, data.teacherBSub);
+    const contactA = getTeacherContact(data.teacherA);
+    
+    const classOnlyA = extractClassNameOnly(teacherAClassFull) || teacherAClassFull;
+    const classOnlyB = extractClassNameOnly(teacherBClassFull) || teacherBClassFull;
+    
+    let message = `بسم الله الرحمن الرحيم\n\n`;
+    message += `الأخ الفاضل / ${data.teacherB}\n`;
+    message += `السلام عليكم ورحمة الله وبركاته،\n\n`;
+    message += `أتقدم إليكم بطلب تبادل حصص وفق البيانات التالية:\n\n`;
+    message += `══════════════════════════════════════════\n`;
+    message += `📌 الحصة المراد تبديلها:\n`;
+    message += `══════════════════════════════════════════\n`;
+    message += `* اليوم: ${data.dayA}\n`;
+    message += `* التاريخ: ${data.dateA}\n`;
+    message += `* الحصة: ${data.periodFromA}\n`;
+    message += `* الصف: ${classOnlyA}\n`;
+    message += `* المادة: ${teacherAMaterial}\n\n`;
+    message += `══════════════════════════════════════════\n`;
+    message += `📌 الحصة المعوضة:\n`;
+    message += `══════════════════════════════════════════\n`;
+    message += `* اليوم: ${data.daySwap}\n`;
+    message += `* التاريخ: ${data.dateSwap}\n`;
+    message += `* الحصة: ${data.periodToA}\n`;
+    message += `* الصف: ${classOnlyB}\n`;
+    message += `* المادة: ${teacherBMaterial}\n\n`;
+    message += `══════════════════════════════════════════\n`;
+    message += `وسأقوم أنا (${data.teacherA}) بتدريس الحصة ${data.periodToA} للصف ${classOnlyB}، بينما تقومون أنتم بتدريس الحصة ${data.periodFromA} للصف ${classOnlyA}.\n\n`;
+    message += `══════════════════════════════════════════\n`;
+    message += `📞 رقم التواصل: ${contactA.phone || 'غير متوفر'}\n`;
+    message += `══════════════════════════════════════════\n\n`;
+    message += `آمل منكم التكرم بالموافقة على هذا التبادل إذا كان مناسباً لكم، ولكم جزيل الشكر والتقدير.\n\n`;
+    message += `مع خالص التحية والتقدير،\n\n`;
+    message += `${data.teacherA}\n`;
+    message += `معلم مادة ${teacherAMaterial}\n`;
+    message += `مدرسة أحمد بن راشد المريخي الابتدائية للبنين\n`;
+    
+    return message;
+}
+
+function sendTextViaWhatsApp() {
+    if (!lastSwapData) { alert('لا توجد بيانات تبديل للإرسال'); return; }
+    const contact = getTeacherContact(lastTeacherBName);
+    const phone = contact.phone;
+    if (!phone) { alert('لا يوجد رقم هاتف مسجل لهذا المعلم'); return; }
+    const message = getFormattedTextMessage();
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    closeSendOptions();
+}
+
+function sendTextViaEmail() {
+    if (!lastSwapData) { alert('لا توجد بيانات تبديل للإرسال'); return; }
+    const contact = getTeacherContact(lastTeacherBName);
+    const email = contact.email;
+    if (!email) { alert('لا يوجد بريد إلكتروني مسجل لهذا المعلم'); return; }
+    const message = getFormattedTextMessage();
+    const subject = `طلب تبادل حصص`;
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+    window.location.href = mailtoUrl;
+    closeSendOptions();
+}
+
+function downloadFileFirst() {
+    if (!lastPdfBlob || !lastTeacherBName) { alert('لا يوجد ملف PDF للإرسال'); return; }
+    const url = URL.createObjectURL(lastPdfBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `نموذج_تبديل_حصص_${lastTeacherBName}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    alert('تم تحميل الملف بنجاح، يمكنك الآن إرساله عبر الواتساب أو الإيميل');
+    closeSendOptions();
+}
+
+function showSendOptions() { document.getElementById('sendOptionsOverlay').classList.add('active'); }
+function closeSendOptions() { document.getElementById('sendOptionsOverlay').classList.remove('active'); }
+
+// ============================================================
 // تهيئة المتغيرات والعناصر
 // ============================================================
 const teacherASelect = document.getElementById('teacherA');
@@ -1167,7 +1340,6 @@ const teacherBSubjectDiv = document.getElementById('teacherBSubject');
 const swapInternalRadio = document.getElementById('swapInternal');
 const swapExternalRadio = document.getElementById('swapExternal');
 
-// ملء قائمة المعلمين
 teachersList.forEach(teacher => {
     const option = document.createElement('option');
     option.value = teacher.name;
@@ -1179,15 +1351,12 @@ teachersList.forEach(teacher => {
     teacherBSelect.appendChild(optionB);
 });
 
-// الأحداث
 teacherASelect.addEventListener('change', () => {
     const selectedName = teacherASelect.value;
     if (selectedName) {
         const teacherObj = teachersList.find(t => t.name === selectedName);
         if (teacherObj) teacherASubjectDiv.innerHTML = `<span class="subject-badge">${teacherObj.subject} (قسم ${teacherObj.department})</span>`;
-    } else {
-        teacherASubjectDiv.innerText = '---';
-    }
+    } else { teacherASubjectDiv.innerText = '---'; }
     updateTeacherAClass();
     updateAvailableTeachers();
     updateTeacherSwapStatus();
@@ -1207,7 +1376,6 @@ teacherBSelect.addEventListener('change', () => {
         updateTeacherBSwapClass();
         checkTeacherBusyInSwap();
         updateBestSlotMessage();
-        
         const swapType = document.querySelector('input[name="swapType"]:checked').value;
         const teacherAName = teacherASelect.value;
         const day = daySelectA.value;
@@ -1219,12 +1387,8 @@ teacherBSelect.addEventListener('change', () => {
             if (!doClassesMatch(teacherAClass, teacherBClass)) {
                 classMatchWarning.style.display = 'block';
                 classMatchWarning.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <strong>تنبيه:</strong> التبديل الخارجي يتطلب تطابق الصف! صف المعلم الأول: ${teacherAClass}، صف المعلم الثاني: ${teacherBClass || 'فارغ'}`;
-            } else {
-                classMatchWarning.style.display = 'none';
-            }
-        } else {
-            classMatchWarning.style.display = 'none';
-        }
+            } else { classMatchWarning.style.display = 'none'; }
+        } else { classMatchWarning.style.display = 'none'; }
     } else {
         teacherBSubjectDiv.innerText = '---';
         document.getElementById('teacherBSwapInfo').style.display = 'none';
@@ -1234,36 +1398,21 @@ teacherBSelect.addEventListener('change', () => {
     }
 });
 
-daySelectSwap.addEventListener('change', () => { 
-    updateTeacherSwapStatus(); 
-    updateTeacherBSwapClass();
-    checkTeacherBusyInSwap();
-});
-periodSwap.addEventListener('change', () => { 
-    updateTeacherSwapStatus(); 
-    updateTeacherBSwapClass();
-    checkTeacherBusyInSwap();
-});
+daySelectSwap.addEventListener('change', () => { updateTeacherSwapStatus(); updateTeacherBSwapClass(); checkTeacherBusyInSwap(); });
+periodSwap.addEventListener('change', () => { updateTeacherSwapStatus(); updateTeacherBSwapClass(); checkTeacherBusyInSwap(); });
 
 document.getElementById('applyBestSlotBtn').addEventListener('click', showDateOptionOverlay);
 document.getElementById('selectBeforeDateBtn').addEventListener('click', () => {
     const originalDate = dateInputA.value;
-    const originalDay = daySelectA.value;
-    const beforeDate = getDatesForProposedDay(pendingBestSlot.day, originalDate, originalDay).before;
-    applyBestSlotWithDate(beforeDate);
+    const dates = getDatesForProposedDay(pendingBestSlot.day, originalDate);
+    applyBestSlotWithDate(dates.before);
 });
 document.getElementById('selectAfterDateBtn').addEventListener('click', () => {
     const originalDate = dateInputA.value;
-    const originalDay = daySelectA.value;
-    const afterDate = getDatesForProposedDay(pendingBestSlot.day, originalDate, originalDay).after;
-    applyBestSlotWithDate(afterDate);
+    const dates = getDatesForProposedDay(pendingBestSlot.day, originalDate);
+    applyBestSlotWithDate(dates.after);
 });
-document.getElementById('confirmDateBtn').addEventListener('click', () => {
-    const currentDate = dateInputSwap.value;
-    applyBestSlotWithDate(currentDate);
-});
-
-let lastSwapData = null;
+document.getElementById('confirmDateBtn').addEventListener('click', () => { applyBestSlotWithDate(dateInputSwap.value); });
 
 document.getElementById('previewSwapBtn').addEventListener('click', () => {
     const teacherAName = teacherASelect.value;
@@ -1275,40 +1424,18 @@ document.getElementById('previewSwapBtn').addEventListener('click', () => {
     const periodFromA = periodA.value;
     const periodToA = periodSwap.value;
     const swapType = document.querySelector('input[name="swapType"]:checked').value;
-    
-    if (!teacherAName || !teacherBName || !dayA || !daySwap || !periodFromA || !periodToA) {
-        alert('يرجى إكمال جميع البيانات');
-        return;
-    }
-    
+    if (!teacherAName || !teacherBName || !dayA || !daySwap || !periodFromA || !periodToA) { alert('يرجى إكمال جميع البيانات'); return; }
     const teacherAObj = teachersList.find(t => t.name === teacherAName);
     const teacherBObj = teachersList.find(t => t.name === teacherBName);
     if (!teacherAObj || !teacherBObj) return;
-    
     const teacherAClass = getTeacherClass(teacherAName, dayA, periodFromA);
     const teacherBClassOriginal = getTeacherClass(teacherBName, dayA, periodFromA);
     const teacherBClassSwap = getTeacherClass(teacherBName, daySwap, periodToA);
-    
-    if (teacherBClassOriginal !== "فارغ") {
-        alert('⚠️ المعلم الثاني ليس فارغاً في هذا التوقيت! لا يمكنه أخذ حصة المعلم الأول.');
-        return;
-    }
+    if (teacherBClassOriginal !== "فارغ") { alert('⚠️ المعلم الثاني ليس فارغاً في هذا التوقيت!'); return; }
     const teacherAClassSwap = getTeacherClass(teacherAName, daySwap, periodToA);
-    if (teacherAClassSwap !== "فارغ") {
-        alert('⚠️ المعلم الأول ليس فارغاً في الحصة المطلوبة! لا يمكنه أخذ حصة المعلم الثاني.');
-        return;
-    }
-    if (!isTeacherBusy(teacherBName, daySwap, periodToA)) {
-        alert(`⚠️ المعلم الثاني (${teacherBName}) فارغ في الحصة المعوضة! لا يمكنه إعطاء حصة للمعلم الأول.`);
-        return;
-    }
-    if (swapType === 'external') {
-        if (!doClassesMatch(teacherAClass, teacherBClassSwap)) {
-            alert(`⚠️ التبديل الخارجي يتطلب تطابق الصف! صف المعلم الأول: ${teacherAClass}، صف المعلم الثاني في الحصة المعوضة: ${teacherBClassSwap}`);
-            return;
-        }
-    }
-    
+    if (teacherAClassSwap !== "فارغ") { alert('⚠️ المعلم الأول ليس فارغاً في الحصة المطلوبة!'); return; }
+    if (!isTeacherBusy(teacherBName, daySwap, periodToA)) { alert(`⚠️ المعلم الثاني (${teacherBName}) فارغ في الحصة المعوضة!`); return; }
+    if (swapType === 'external' && !doClassesMatch(teacherAClass, teacherBClassSwap)) { alert(`⚠️ التبديل الخارجي يتطلب تطابق الصف!`); return; }
     const swapTypeText = swapType === 'internal' ? '🔄 تبديل داخلي (نفس المادة)' : '🌐 تبديل خارجي (نفس الصف)';
     const teacherAAdjacent = checkAdjacentClasses(teacherAName, dayA, periodFromA);
     const teacherBAdjacent = checkAdjacentClasses(teacherBName, daySwap, periodToA);
@@ -1320,7 +1447,6 @@ document.getElementById('previewSwapBtn').addEventListener('click', () => {
             ${teacherBAdjacent.length > 0 ? `• المعلم ${teacherBName} لديه حصص مجاورة: ${teacherBAdjacent.join('، ')}` : ''}
         </div>`;
     }
-    
     document.getElementById('swapPreview').innerHTML = `
         <div class="info-card">
             <i class="fas fa-exchange-alt"></i> <strong>نوع التبديل:</strong> ${swapTypeText}<br><hr>
@@ -1342,7 +1468,6 @@ document.getElementById('previewSwapBtn').addEventListener('click', () => {
             </div>
         </div>
     `;
-    
     lastSwapData = {
         teacherA: teacherAName, teacherASub: teacherAObj.subject,
         teacherB: teacherBName, teacherBSub: teacherBObj.subject,
@@ -1350,8 +1475,7 @@ document.getElementById('previewSwapBtn').addEventListener('click', () => {
         dayA: dayA, daySwap: daySwap,
         dateA: dateA, dateSwap: dateSwap,
         periodFromA: periodFromA, periodToA: periodToA,
-        teacherAClass: teacherAClass, teacherBClass: teacherBClassSwap,
-        adjacentWarnings: (teacherAAdjacent.length > 0 || teacherBAdjacent.length > 0)
+        teacherAClass: teacherAClass, teacherBClass: teacherBClassSwap
     };
 });
 
@@ -1369,7 +1493,7 @@ document.getElementById('generatePdfBtn').addEventListener('click', async () => 
         <div style="border:1px solid #ddd; border-radius:15px; padding:15px;">
             <h5>📋 تفاصيل عملية التبديل</h5>
             <table style="width:100%">
-                <tr style="background:#f0f4f8"><td colspan="2"><strong>نوع التبديل:</strong> ${data.swapType}        </td></tr>
+                <tr style="background:#f0f4f8"><td colspan="2"><strong>نوع التبديل:</strong> ${data.swapType}           </td></tr>
                 <tr><td colspan="2"><hr></td></tr>
                 <tr style="background:#e7f5ff"><td colspan="2"><strong>📌 الحصة المتبادلة</strong></td></tr>
                 <tr><td style="width:40%"><strong>المعلم الأول:</strong></td><td>${data.teacherA} (${data.teacherASub})</td></tr>
@@ -1406,33 +1530,27 @@ document.getElementById('generatePdfBtn').addEventListener('click', async () => 
         const pdf = new jsPDF('p', 'mm', 'a4');
         const imgWidth = 190, imgHeight = (canvas.height * 190) / canvas.width;
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', (210 - imgWidth) / 2, 10, imgWidth, imgHeight);
+        const pdfBlob = pdf.output('blob');
+        lastPdfBlob = pdfBlob;
+        lastTeacherBName = data.teacherB;
+        const contact = getTeacherContact(data.teacherB);
+        const contactInfoDiv = document.getElementById('teacherBContactInfo');
+        if (contactInfoDiv) {
+            contactInfoDiv.innerHTML = `<i class="fas fa-user"></i> <strong>المعلم:</strong> ${contact.fullName}<br><i class="fab fa-whatsapp"></i> <strong>واتساب:</strong> ${contact.phone || "غير متوفر"}<br><i class="fas fa-envelope"></i> <strong>البريد:</strong> ${contact.email || "غير متوفر"}`;
+        }
         pdf.save(`نموذج_تبديل_حصص_${data.teacherA}_${data.teacherB}.pdf`);
+        setTimeout(() => { showSendOptions(); }, 500);
     } catch(e) { alert('خطأ: ' + e.message); }
     finally { document.body.removeChild(reportDiv); }
 });
 
-// دوال نافذة الباسورد والشروط
-function openPasswordOverlay() {
-    document.getElementById('passwordOverlay').classList.add('active');
-    document.getElementById('passwordInput').value = '';
-}
-
-function closePasswordOverlay() {
-    document.getElementById('passwordOverlay').classList.remove('active');
-}
-
-function closeTermsOverlay() {
-    document.getElementById('termsOverlay').classList.remove('active');
-}
-
+function openPasswordOverlay() { document.getElementById('passwordOverlay').classList.add('active'); document.getElementById('passwordInput').value = ''; }
+function closePasswordOverlay() { document.getElementById('passwordOverlay').classList.remove('active'); }
+function closeTermsOverlay() { document.getElementById('termsOverlay').classList.remove('active'); }
 function checkPassword() {
     const password = document.getElementById('passwordInput').value;
-    if (password === "Anhs7293@") {
-        closePasswordOverlay();
-        document.getElementById('termsOverlay').classList.add('active');
-    } else {
-        alert('كلمة المرور غير صحيحة!');
-    }
+    if (password === "Anhs7293@") { closePasswordOverlay(); document.getElementById('termsOverlay').classList.add('active'); }
+    else { alert('كلمة المرور غير صحيحة!'); }
 }
 </script>
 
