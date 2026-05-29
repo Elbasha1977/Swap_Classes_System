@@ -103,9 +103,12 @@
         .send-options .whatsapp-text-btn:hover { background: #054a44; }
         .send-options .email-text-btn { background: #ea4335; }
         .send-options .email-text-btn:hover { background: #d3382a; }
-        .send-options .download-btn { background: #17a2b8; }
-        .send-options .download-btn:hover { background: #138496; }
-        .send-options .skip-btn { background: #6c757d; }
+        .send-options .copy-text-btn { background: #17a2b8; }
+        .send-options .copy-text-btn:hover { background: #138496; }
+        .send-options .download-btn { background: #6c757d; }
+        .send-options .download-btn:hover { background: #5a6268; }
+        .send-options .skip-btn { background: #dc3545; }
+        .send-options .skip-btn:hover { background: #c82333; }
         .contact-info { background: #e7f5ff; padding: 12px; border-radius: 16px; margin: 15px 0; text-align: right; }
         .contact-info i { width: 25px; color: #1e3c72; }
         @media print { .no-print { display: none; } }
@@ -362,16 +365,19 @@
         </div>
         <div class="send-options">
             <button class="whatsapp-text-btn" onclick="sendTextViaWhatsApp()">
-                <i class="fab fa-whatsapp"></i> إرسال نص عبر واتساب
+                <i class="fab fa-whatsapp"></i> إرسال عبر واتساب
             </button>
             <button class="email-text-btn" onclick="sendTextViaEmail()">
-                <i class="fas fa-envelope"></i> إرسال نص عبر الإيميل
+                <i class="fas fa-envelope"></i> إرسال عبر الإيميل
+            </button>
+            <button class="copy-text-btn" onclick="copyTextToClipboard()">
+                <i class="fas fa-copy"></i> نسخ النص
             </button>
             <button class="download-btn" onclick="downloadFileFirst()">
                 <i class="fas fa-download"></i> تحميل PDF
             </button>
             <button class="skip-btn" onclick="closeSendOptions()">
-                <i class="fas fa-times"></i> تخطي
+                <i class="fas fa-times"></i> إغلاق
             </button>
         </div>
     </div>
@@ -808,7 +814,6 @@ const teachersContact = {
     "يوسف الأسمر + أحمد عصام": { phone: "97450835035", email: "y.alasmar1607@education.qa", fullName: "يوسف خالد يوسف الأسمر" }
 };
 
-// دالة للحصول على بيانات اتصال المعلم
 function getTeacherContact(teacherName) {
     for (const [key, value] of Object.entries(teachersContact)) {
         if (teacherName.includes(key) || key.includes(teacherName) || teacherName === key) {
@@ -1290,7 +1295,8 @@ function sendTextViaWhatsApp() {
     const phone = contact.phone;
     if (!phone) { alert('لا يوجد رقم هاتف مسجل لهذا المعلم'); return; }
     const message = getFormattedTextMessage();
-    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    const cleanMessage = message.replace(/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF0-9\s\-\*\.\:\,\،\n]/g, '');
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(cleanMessage)}`;
     window.open(whatsappUrl, '_blank');
     closeSendOptions();
 }
@@ -1304,6 +1310,23 @@ function sendTextViaEmail() {
     const subject = `طلب تبادل حصص`;
     const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
     window.location.href = mailtoUrl;
+    closeSendOptions();
+}
+
+function copyTextToClipboard() {
+    if (!lastSwapData) { alert('لا توجد بيانات تبديل للإرسال'); return; }
+    const message = getFormattedTextMessage();
+    navigator.clipboard.writeText(message).then(() => {
+        alert('تم نسخ النص بنجاح! يمكنك الآن لصقه في واتساب أو الإيميل');
+    }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = message;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('تم نسخ النص بنجاح!');
+    });
     closeSendOptions();
 }
 
@@ -1452,10 +1475,10 @@ document.getElementById('previewSwapBtn').addEventListener('click', () => {
             <i class="fas fa-exchange-alt"></i> <strong>نوع التبديل:</strong> ${swapTypeText}<br><hr>
             <div class="alert alert-success p-2"><i class="fas fa-check-circle"></i> ✅ تم التحقق من جميع الشروط:</div>
             <strong>📋 الحصة المتبادلة:</strong><br>
-            👨‍🏫 ${teacherAName} يدرس <span class="class-badge">${teacherAClass}</span> في يوم ${dayA} (${dateA})  ${periodFromA}<br>
+            👨‍🏫 ${teacherAName} يدرس <span class="class-badge">${teacherAClass}</span> في يوم ${dayA} (${dateA}) حصة ${periodFromA}<br>
             👨‍🏫 ${teacherBName} <span class="free-badge">فارغ</span> في هذا التوقيت ✅<br><hr>
             <strong>📋 الحصة المعوضة:</strong><br>
-            👨‍🏫 ${teacherBName} يدرس <span class="class-badge">${teacherBClassSwap}</span> في يوم ${daySwap} (${dateSwap})  ${periodToA}<br>
+            👨‍🏫 ${teacherBName} يدرس <span class="class-badge">${teacherBClassSwap}</span> في يوم ${daySwap} (${dateSwap}) حصة ${periodToA}<br>
             👨‍🏫 ${teacherAName} <span class="free-badge">فارغ</span> في هذا التوقيت ✅<br>
             👨‍🏫 ${teacherBName} <span class="class-badge">مشغول</span> في هذا التوقيت (ليعطي حصة) ✅<br>
             ${swapType === 'external' ? `<span class="free-badge">✅ الصف متطابق: ${extractClassNameOnly(teacherAClass)} = ${extractClassNameOnly(teacherBClassSwap)}</span><br>` : ''}
@@ -1463,8 +1486,8 @@ document.getElementById('previewSwapBtn').addEventListener('click', () => {
             ${adjacentWarningHtml}
             <div class="alert alert-success mt-2 mb-0">
                 <strong>📌 نتيجة التبديل:</strong><br>
-                - سيدرس ${teacherBName}  ${periodFromA} (${teacherAClass}) بدلاً من ${teacherAName}<br>
-                - سيدرس ${teacherAName}  ${periodToA} (${teacherBClassSwap}) بدلاً من ${teacherBName}
+                - سيدرس ${teacherBName} حصة ${periodFromA} (${teacherAClass}) بدلاً من ${teacherAName}<br>
+                - سيدرس ${teacherAName} حصة ${periodToA} (${teacherBClassSwap}) بدلاً من ${teacherBName}
             </div>
         </div>
     `;
@@ -1493,7 +1516,7 @@ document.getElementById('generatePdfBtn').addEventListener('click', async () => 
         <div style="border:1px solid #ddd; border-radius:15px; padding:15px;">
             <h5>📋 تفاصيل عملية التبديل</h5>
             <table style="width:100%">
-                <tr style="background:#f0f4f8"><td colspan="2"><strong>نوع التبديل:</strong> ${data.swapType}           </td></tr>
+                <tr style="background:#f0f4f8"><td colspan="2"><strong>نوع التبديل:</strong> ${data.swapType}            </td></tr>
                 <tr><td colspan="2"><hr></td></tr>
                 <tr style="background:#e7f5ff"><td colspan="2"><strong>📌 الحصة المتبادلة</strong></td></tr>
                 <tr><td style="width:40%"><strong>المعلم الأول:</strong></td><td>${data.teacherA} (${data.teacherASub})</td></tr>
