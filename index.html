@@ -1475,10 +1475,10 @@ document.getElementById('previewSwapBtn').addEventListener('click', () => {
             <i class="fas fa-exchange-alt"></i> <strong>نوع التبديل:</strong> ${swapTypeText}<br><hr>
             <div class="alert alert-success p-2"><i class="fas fa-check-circle"></i> ✅ تم التحقق من جميع الشروط:</div>
             <strong>📋 الحصة المتبادلة:</strong><br>
-            👨‍🏫 ${teacherAName} يدرس <span class="class-badge">${teacherAClass}</span> في يوم ${dayA} (${dateA}) حصة ${periodFromA}<br>
+            👨‍🏫 ${teacherAName} يدرس <span class="class-badge">${teacherAClass}</span> في يوم ${dayA} (${dateA})  ${periodFromA}<br>
             👨‍🏫 ${teacherBName} <span class="free-badge">فارغ</span> في هذا التوقيت ✅<br><hr>
             <strong>📋 الحصة المعوضة:</strong><br>
-            👨‍🏫 ${teacherBName} يدرس <span class="class-badge">${teacherBClassSwap}</span> في يوم ${daySwap} (${dateSwap}) حصة ${periodToA}<br>
+            👨‍🏫 ${teacherBName} يدرس <span class="class-badge">${teacherBClassSwap}</span> في يوم ${daySwap} (${dateSwap})  ${periodToA}<br>
             👨‍🏫 ${teacherAName} <span class="free-badge">فارغ</span> في هذا التوقيت ✅<br>
             👨‍🏫 ${teacherBName} <span class="class-badge">مشغول</span> في هذا التوقيت (ليعطي حصة) ✅<br>
             ${swapType === 'external' ? `<span class="free-badge">✅ الصف متطابق: ${extractClassNameOnly(teacherAClass)} = ${extractClassNameOnly(teacherBClassSwap)}</span><br>` : ''}
@@ -1486,8 +1486,8 @@ document.getElementById('previewSwapBtn').addEventListener('click', () => {
             ${adjacentWarningHtml}
             <div class="alert alert-success mt-2 mb-0">
                 <strong>📌 نتيجة التبديل:</strong><br>
-                - سيدرس ${teacherBName} حصة ${periodFromA} (${teacherAClass}) بدلاً من ${teacherAName}<br>
-                - سيدرس ${teacherAName} حصة ${periodToA} (${teacherBClassSwap}) بدلاً من ${teacherBName}
+                - سيدرس ${teacherBName}  ${periodFromA} (${teacherAClass}) بدلاً من ${teacherAName}<br>
+                - سيدرس ${teacherAName}  ${periodToA} (${teacherBClassSwap}) بدلاً من ${teacherBName}
             </div>
         </div>
     `;
