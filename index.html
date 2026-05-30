@@ -43,6 +43,36 @@
         .programmer-btn:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .floating-send-btn { position: fixed; bottom: 20px; left: 20px; background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; font-size: 16px; display: none; }
         .floating-send-btn i { margin-left: 8px; }
+        .requests-btn { background: linear-gradient(135deg, #6c5ce7, #8b74f0); border: none; padding: 10px 20px; border-radius: 40px; color: white; font-weight: bold; font-size: 14px; }
+        .requests-btn:hover { transform: scale(1.02); }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 20px; padding: 15px; text-align: center; transition: all 0.3s; }
+        .stat-card.pending { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .stat-card.approved { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .stat-card.rejected { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .stat-card i { font-size: 28px; margin-bottom: 8px; }
+        .stat-card .number { font-size: 28px; font-weight: bold; }
+        .request-card { border: 1px solid #e0e0e0; border-radius: 20px; padding: 15px; margin-bottom: 12px; transition: all 0.3s; background: white; }
+        .request-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .request-card.approved { border-right: 5px solid #27ae60; background: #f0fff4; }
+        .request-card.rejected { border-right: 5px solid #e74c3c; background: #fff5f5; }
+        .request-card.pending { border-right: 5px solid #f39c12; background: #fffbf0; }
+        .status-badge { padding: 4px 12px; border-radius: 30px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .status-approved { background: #27ae60; color: white; }
+        .status-rejected { background: #e74c3c; color: white; }
+        .status-pending { background: #f39c12; color: white; }
+        .requests-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 99999; visibility: hidden; opacity: 0; transition: all 0.3s; backdrop-filter: blur(5px); }
+        .requests-modal.active { visibility: visible; opacity: 1; }
+        .requests-modal-content { background: white; border-radius: 28px; width: 650px; max-width: 95%; max-height: 85vh; overflow-y: auto; padding: 25px; }
+        .requests-modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
+        .stats-row { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .stat-card { flex: 1; min-width: 100px; }
+        .action-buttons { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-approve { background: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; }
+        .btn-reject { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; }
+        .empty-requests { text-align: center; padding: 40px; color: #999; }
+        .btn-close-custom { background: none; border: none; font-size: 28px; cursor: pointer; color: #999; }
+        .btn-close-custom:hover { color: #333; }
+        
         .password-overlay, .terms-overlay, .date-option-overlay, .send-options-overlay {
             position: fixed;
             top: 0;
@@ -103,6 +133,8 @@
         .send-options button { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; }
         .send-options .whatsapp-text-btn { background: #075E54; }
         .send-options .whatsapp-text-btn:hover { background: #054a44; }
+        .send-options .whatsapp-poll-btn { background: #25D366; }
+        .send-options .whatsapp-poll-btn:hover { background: #20b859; }
         .send-options .email-text-btn { background: #ea4335; }
         .send-options .email-text-btn:hover { background: #d3382a; }
         .send-options .copy-text-btn { background: #17a2b8; }
@@ -289,7 +321,12 @@
         </div>
         <div class="col-lg-5">
             <div class="card card-custom p-4 h-100">
-                <h5><i class="fas fa-clipboard-list"></i> تفاصيل التبديل</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h5 class="mb-0"><i class="fas fa-clipboard-list"></i> تفاصيل التبديل</h5>
+                    <button class="btn requests-btn" onclick="showRequestsModal()">
+                        <i class="fas fa-history"></i> 📋 طلباتي السابقة
+                    </button>
+                </div>
                 <div id="swapPreview" class="mt-3">
                     <div class="alert alert-secondary">سيتم عرض التفاصيل بعد المعاينة</div>
                 </div>
@@ -302,10 +339,45 @@
     </div>
 </div>
 
-<!-- زر عائم للإرسال بعد التصدير -->
 <button id="floatingSendBtn" class="floating-send-btn">
     <i class="fas fa-paper-plane"></i> إرسال الطلب
 </button>
+
+<div id="requestsModal" class="requests-modal">
+    <div class="requests-modal-content">
+        <div class="requests-modal-header">
+            <h4><i class="fas fa-history"></i> 📋 طلباتي السابقة</h4>
+            <button class="btn-close-custom" onclick="closeRequestsModal()">&times;</button>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card pending">
+                <i class="fas fa-clock"></i>
+                <div class="number" id="pendingCount">0</div>
+                <div>قيد الانتظار</div>
+            </div>
+            <div class="stat-card approved">
+                <i class="fas fa-check-circle"></i>
+                <div class="number" id="approvedCount">0</div>
+                <div>تمت الموافقة</div>
+            </div>
+            <div class="stat-card rejected">
+                <i class="fas fa-times-circle"></i>
+                <div class="number" id="rejectedCount">0</div>
+                <div>مرفوضة</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-chart-line"></i>
+                <div class="number" id="totalCount">0</div>
+                <div>إجمالي الطلبات</div>
+            </div>
+        </div>
+        
+        <div id="requestsList">
+            <div class="empty-requests">📭 لا توجد طلبات سابقة</div>
+        </div>
+    </div>
+</div>
 
 <div id="passwordOverlay" class="password-overlay">
     <div class="password-modal">
@@ -370,7 +442,10 @@
         </div>
         <div class="send-options">
             <button class="whatsapp-text-btn" onclick="sendTextViaWhatsApp()">
-                <i class="fab fa-whatsapp"></i> إرسال عبر واتساب
+                <i class="fab fa-whatsapp"></i> 📝 إرسال نص عادي
+            </button>
+            <button class="whatsapp-poll-btn" onclick="sendPollViaWhatsApp()">
+                <i class="fab fa-whatsapp"></i> 📊 إرسال استطلاع (1️⃣ نعم / 2️⃣ لا)
             </button>
             <button class="email-text-btn" onclick="sendTextViaEmail()">
                 <i class="fas fa-envelope"></i> إرسال عبر الإيميل
@@ -382,6 +457,7 @@
                 <i class="fas fa-times"></i> إغلاق
             </button>
         </div>
+        <div class="small text-muted mt-3">📌 الاستطلاع: يرجى الرد برقم 1 للموافقة أو 2 للاعتذار</div>
     </div>
 </div>
 
@@ -445,7 +521,7 @@ const periodsList = ["الحصة 1", "الحصة 2", "الحصة 3", "الحصة
 const dayNumberMap = { "الأحد": 0, "الاثنين": 1, "الثلاثاء": 2, "الأربعاء": 3, "الخميس": 4 };
 
 // ============================================================
-// جدول الحصص الكامل لجميع المعلمين الـ 45
+// جدول الحصص الكامل لجميع المعلمين الـ 45 - كامل
 // ============================================================
 const schedule = {
     "ضيف الله ناجي": {
@@ -766,7 +842,7 @@ const schedule = {
 };
 
 // ============================================================
-// بيانات الاتصال للمعلمين (من ملف Excel)
+// بيانات الاتصال الكاملة للمعلمين الـ 45 (من ملف Excel)
 // ============================================================
 const teachersContact = {
     "ضيف الله ناجي": { phone: "97477885826", email: "d.alalsasmeh0107@education.qa", fullName: "ضيف الله ناجي عبد الله اللصاصمه" },
@@ -823,6 +899,115 @@ function getTeacherContact(teacherName) {
         }
     }
     return { phone: "", email: "", fullName: teacherName };
+}
+
+// ============================================================
+// نظام إدارة الطلبات (تخزين في localStorage)
+// ============================================================
+let swapRequests = [];
+
+function loadRequests() {
+    const saved = localStorage.getItem('swapRequests');
+    if (saved) {
+        swapRequests = JSON.parse(saved);
+    } else {
+        swapRequests = [];
+    }
+    updateRequestsUI();
+}
+
+function saveRequests() {
+    localStorage.setItem('swapRequests', JSON.stringify(swapRequests));
+    updateRequestsUI();
+}
+
+function addRequest(requestData) {
+    const newRequest = {
+        id: Date.now(),
+        ...requestData,
+        status: 'pending',
+        createdAt: new Date().toLocaleString('ar-EG'),
+        updatedAt: null
+    };
+    swapRequests.unshift(newRequest);
+    saveRequests();
+    return newRequest;
+}
+
+function updateRequestStatus(requestId, status) {
+    const request = swapRequests.find(r => r.id == requestId);
+    if (request) {
+        request.status = status;
+        request.updatedAt = new Date().toLocaleString('ar-EG');
+        saveRequests();
+    }
+}
+
+function showRequestsModal() {
+    updateRequestsUI();
+    document.getElementById('requestsModal').classList.add('active');
+}
+
+function closeRequestsModal() {
+    document.getElementById('requestsModal').classList.remove('active');
+}
+
+function updateRequestsUI() {
+    const pendingCount = swapRequests.filter(r => r.status === 'pending').length;
+    const approvedCount = swapRequests.filter(r => r.status === 'approved').length;
+    const rejectedCount = swapRequests.filter(r => r.status === 'rejected').length;
+    const totalCount = swapRequests.length;
+    
+    document.getElementById('pendingCount').innerText = pendingCount;
+    document.getElementById('approvedCount').innerText = approvedCount;
+    document.getElementById('rejectedCount').innerText = rejectedCount;
+    document.getElementById('totalCount').innerText = totalCount;
+    
+    const requestsListDiv = document.getElementById('requestsList');
+    if (swapRequests.length === 0) {
+        requestsListDiv.innerHTML = '<div class="empty-requests">📭 لا توجد طلبات سابقة</div>';
+        return;
+    }
+    
+    let html = '';
+    for (const req of swapRequests) {
+        const statusClass = req.status === 'approved' ? 'approved' : (req.status === 'rejected' ? 'rejected' : 'pending');
+        const statusText = req.status === 'approved' ? '✅ تمت الموافقة' : (req.status === 'rejected' ? '❌ مرفوض' : '⏳ قيد الانتظار');
+        const statusBadgeClass = req.status === 'approved' ? 'status-approved' : (req.status === 'rejected' ? 'status-rejected' : 'status-pending');
+        
+        html += `
+            <div class="request-card ${statusClass}">
+                <div class="d-flex justify-content-between align-items-start flex-wrap">
+                    <div>
+                        <strong>👨‍🏫 ${req.teacherA}</strong> ↔️ <strong>${req.teacherB}</strong>
+                    </div>
+                    <span class="status-badge ${statusBadgeClass}">${statusText}</span>
+                </div>
+                <div class="row mt-2 small">
+                    <div class="col-md-6">
+                        <i class="fas fa-calendar-alt text-primary"></i> <strong>حصتي:</strong> ${req.dayA} ${req.dateA} - ${req.periodFromA} (${req.teacherAClass})
+                    </div>
+                    <div class="col-md-6">
+                        <i class="fas fa-calendar-check text-success"></i> <strong>حصته:</strong> ${req.daySwap} ${req.dateSwap} - ${req.periodToA} (${req.teacherBClass})
+                    </div>
+                    <div class="col-12 mt-1">
+                        <i class="fas fa-tag text-info"></i> ${req.swapType}
+                    </div>
+                    <div class="col-12 mt-1">
+                        <i class="fas fa-clock text-muted"></i> <small>تاريخ الطلب: ${req.createdAt}</small>
+                        ${req.updatedAt ? `<small class="mx-2">| آخر تحديث: ${req.updatedAt}</small>` : ''}
+                    </div>
+                </div>
+                ${req.status === 'pending' ? `
+                <div class="action-buttons mt-2">
+                    <button class="btn-approve" onclick="updateRequestStatus(${req.id}, 'approved')"><i class="fas fa-check"></i> موافقة</button>
+                    <button class="btn-reject" onclick="updateRequestStatus(${req.id}, 'rejected')"><i class="fas fa-times"></i> رفض</button>
+                </div>
+                ` : ''}
+            </div>
+        `;
+    }
+    requestsListDiv.innerHTML = html;
 }
 
 let lastPdfBlob = null;
@@ -1251,9 +1436,7 @@ function getFormattedTextMessage() {
     const teacherAClassFull = data.teacherAClass;
     const teacherBClassFull = data.teacherBClass;
     const teacherAMaterial = getSubjectOnly(teacherAClassFull, data.teacherASub);
-    const teacherBMaterial = getSubjectOnly(teacherBClassFull, data.teacherBSub);
     const contactA = getTeacherContact(data.teacherA);
-    
     const classOnlyA = extractClassNameOnly(teacherAClassFull) || teacherAClassFull;
     const classOnlyB = extractClassNameOnly(teacherBClassFull) || teacherBClassFull;
     
@@ -1276,7 +1459,7 @@ function getFormattedTextMessage() {
     message += `* التاريخ: ${data.dateSwap}\n`;
     message += `* الحصة: ${data.periodToA}\n`;
     message += `* الصف: ${classOnlyB}\n`;
-    message += `* المادة: ${teacherBMaterial}\n\n`;
+    message += `* المادة: ${data.teacherBSub}\n\n`;
     message += `══════════════════════════════════════════\n`;
     message += `وسأقوم أنا (${data.teacherA}) بتدريس الحصة ${data.periodToA} للصف ${classOnlyB}، بينما تقومون أنتم بتدريس الحصة ${data.periodFromA} للصف ${classOnlyA}.\n\n`;
     message += `══════════════════════════════════════════\n`;
@@ -1289,6 +1472,51 @@ function getFormattedTextMessage() {
     message += `مدرسة أحمد بن راشد المريخي الابتدائية للبنين\n`;
     
     return message;
+}
+
+function getPollMessage() {
+    if (!lastSwapData) return "";
+    const data = lastSwapData;
+    const contactA = getTeacherContact(data.teacherA);
+    const classA = extractClassNameOnly(data.teacherAClass) || data.teacherAClass;
+    const classB = extractClassNameOnly(data.teacherBClass) || data.teacherBClass;
+    
+    let message = `📋 *طلب تبادل حصص*\n\n`;
+    message += `السلام عليكم،\n\n`;
+    message += `أود الاستفسار عن إمكانية تبادل الحصص معكم:\n\n`;
+    message += `─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─\n`;
+    message += `📌 *حصتي:*\n`;
+    message += `   🗓 ${data.dayA} ${data.dateA}\n`;
+    message += `   ⏰ ${data.periodFromA}\n`;
+    message += `   🏫 الصف: ${classA}\n`;
+    message += `   📚 المادة: ${data.teacherASub}\n`;
+    message += `─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─\n`;
+    message += `📌 *حصتكم:*\n`;
+    message += `   🗓 ${data.daySwap} ${data.dateSwap}\n`;
+    message += `   ⏰ ${data.periodToA}\n`;
+    message += `   🏫 الصف: ${classB}\n`;
+    message += `   📚 المادة: ${data.teacherBSub}\n`;
+    message += `─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─\n\n`;
+    message += `*هل توافق على تبديل الحصة؟*\n\n`;
+    message += `┌─────────────────────────┐\n`;
+    message += `│ 1️⃣  نعم موافق          │\n`;
+    message += `│ 2️⃣  أعتذر عن التبديل   │\n`;
+    message += `└─────────────────────────┘\n\n`;
+    message += `📍 *يرجى الرد برقم الاختيار (1 أو 2)*\n\n`;
+    message += `📞 للتواصل: ${contactA.phone || 'غير متوفر'}\n`;
+    
+    return message;
+}
+
+function sendPollViaWhatsApp() {
+    if (!lastSwapData) { alert('لا توجد بيانات تبديل للإرسال'); return; }
+    const contact = getTeacherContact(lastTeacherBName);
+    const phone = contact.phone;
+    if (!phone) { alert('لا يوجد رقم هاتف مسجل لهذا المعلم'); return; }
+    const message = getPollMessage();
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    closeSendOptions();
 }
 
 function sendTextViaWhatsApp() {
@@ -1335,7 +1563,6 @@ function copyTextToClipboard() {
 function showSendOptions() { document.getElementById('sendOptionsOverlay').classList.add('active'); }
 function closeSendOptions() { document.getElementById('sendOptionsOverlay').classList.remove('active'); }
 
-// زر الإرسال العائم
 function showFloatingSendButton() {
     const btn = document.getElementById('floatingSendBtn');
     if (btn) {
@@ -1516,7 +1743,7 @@ document.getElementById('generatePdfBtn').addEventListener('click', async () => 
         <div style="border:1px solid #ddd; border-radius:15px; padding:15px;">
             <h5>📋 تفاصيل عملية التبديل</h5>
             <table style="width:100%">
-                <tr style="background:#f0f4f8"><td colspan="2"><strong>نوع التبديل:</strong> ${data.swapType}             </td></tr>
+                <tr style="background:#f0f4f8"><td colspan="2"><strong>نوع التبديل:</strong> ${data.swapType}                 </td></tr>
                 <tr><td colspan="2"><hr></td></tr>
                 <tr style="background:#e7f5ff"><td colspan="2"><strong>📌 الحصة المتبادلة</strong></td></tr>
                 <tr><td style="width:40%"><strong>المعلم الأول:</strong></td><td>${data.teacherA} (${data.teacherASub})</td></tr>
@@ -1563,6 +1790,20 @@ document.getElementById('generatePdfBtn').addEventListener('click', async () => 
         }
         pdf.save(`نموذج_تبديل_حصص_${data.teacherA}_${data.teacherB}.pdf`);
         alert('✅ تم حفظ ملف PDF بنجاح!');
+        
+        // إضافة الطلب إلى قائمة الطلبات السابقة
+        addRequest({
+            teacherA: data.teacherA,
+            teacherASub: data.teacherASub,
+            teacherB: data.teacherB,
+            teacherBSub: data.teacherBSub,
+            swapType: data.swapType,
+            dayA: data.dayA, daySwap: data.daySwap,
+            dateA: data.dateA, dateSwap: data.dateSwap,
+            periodFromA: data.periodFromA, periodToA: data.periodToA,
+            teacherAClass: data.teacherAClass, teacherBClass: data.teacherBClass
+        });
+        
         showFloatingSendButton();
     } catch(e) { alert('خطأ: ' + e.message); }
     finally { document.body.removeChild(reportDiv); }
@@ -1576,6 +1817,9 @@ function checkPassword() {
     if (password === "Anhs7293@") { closePasswordOverlay(); document.getElementById('termsOverlay').classList.add('active'); }
     else { alert('كلمة المرور غير صحيحة!'); }
 }
+
+// تحميل الطلبات عند بدء التشغيل
+loadRequests();
 </script>
 
 <footer class="no-print">
